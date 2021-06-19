@@ -9,7 +9,7 @@ EnableExplicit
 
 	Global libpath.s, libname.s, libfullname.s
 
-	libpath = "E:\Programmi\Web\FireFo\"
+	libpath = "E:\Programmi\Web\FireFox\"
 	#Libmoz = 1
 	libname = "mozglue.dll" ; FIX ME: CompilerIf firefox... or place it in program folder
 	libfullname = libpath+libname
@@ -54,7 +54,7 @@ Global fragmentShaderSource.s = ~"#version 300 es\n"+
     ~"out vec4 FragColor;\n"+
     ~"void main()\n"+
     ~"{\n"+
-    ~"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"+
+    ~"   FragColor = vec4(0.0f, 0.5f, 0.2f, 1.0f);\n"+
     ~"}\n";
 ; 
 
@@ -74,42 +74,65 @@ ctx_list(0) = #EGL_NONE
 Global *egl_obj.egl_object
 *egl_obj = egl_Start(WindowID(0), fb_list(), ctx_list(), #False)
 
+;glViewport (0, 0, 530, 320) ; optional if viewport is entire window
+
 Define vshader = make_shader(#GL_VERTEX_SHADER,"string",vertexShaderSource)
 Define fshader = make_shader(#GL_FRAGMENT_SHADER,"string",fragmentShaderSource)
 
-Define program = make_program (vshader, fshader)
+Global program = make_program (vshader, fshader)
 
 ;SetupGL()
-; Debug glGetError()
-; Debug GetErrorString(1280)
-; throw_error("ciao")
-AddWindowTimer(0, 1, 16) ; about 60 fps
 
-Global Event
-Repeat
-  Event = WaitWindowEvent()
-  
-  Select Event
-    Case #PB_Event_Timer
-      If EventTimer() = 1
-        ;DrawTriangle(0)
-      EndIf
-  EndSelect
-  
-Until Event = #PB_Event_CloseWindow
 
 ;     // set up vertex Data (And buffer(s)) And configure vertex attributes
 ;     // ------------------------------------------------------------------
-;     float vertices[] = {
-;          0.5f,  0.5f, 0.0f,  // top right
-;          0.5f, -0.5f, 0.0f,  // bottom right
-;         -0.5f, -0.5f, 0.0f,  // bottom left
-;         -0.5f,  0.5f, 0.0f   // top left 
-;     };
-;     unsigned int indices[] = {  // note that we start from 0!
-;         0, 1, 3,  // first Triangle
-;         1, 2, 3   // second Triangle
-;     };
+	Define i
+	Dim vertices.f(12-1)
+	Restore datavertices
+	For i = 0 To 12-1
+		Read.f vertices(i)
+		Debug "vertices "+vertices(i)
+	Next
+	DataSection
+		datavertices:
+		Data.f	 0.5,  0.5, 0.0,  ;// top right
+						 0.5, -0.5, 0.0,  ;// bottom right
+						-0.5, -0.5, 0.0,  ;// bottom left
+						-0.5,  0.5, 0.0   ;// top left 
+	EndDataSection
+	
+
+	Dim indices(3-1)
+	Restore dataindices
+	For i = 0 To 3-1
+		Read.l indices(i)
+	Next
+	DataSection
+		dataindices:
+		Data.l 	0, 1, 3;,  ;// first Triangle
+						;1, 2, 3   ;// second Triangle
+	EndDataSection
+	Debug "indices "+indices(2)
+
+	Define VBO.l
+	;make_buffer (#GL_ARRAY_BUFFER, #GL_STATIC_DRAW, 12 * SizeOf(float), @vertices(), @VBO)
+	make_buffer (#GL_ARRAY_BUFFER, #GL_STATIC_DRAW, 12 * SizeOf(float), ?datavertices, @VBO)
+
+	set_vertex_attribute(program, "aPos", VBO, 3)
+	
+	Procedure DrawTriangle(n)
+		Shared indices()
+			glClearColor (1.00, 0.0, 0.0, 1.0)
+			glClear (#GL_COLOR_BUFFER_BIT)
+			
+			glUseProgram (program)
+			
+			; draw triangle made of 3 points (indices) from the given indices array with current in-use shader
+			;glDrawElements (#GL_TRIANGLES, 3, #GL_UNSIGNED_INT, @indices())
+			glDrawElements (#GL_TRIANGLES, 3, #GL_UNSIGNED_INT, ?dataindices)
+			eglSwapBuffers(*egl_obj\display, *egl_obj\surface)
+	EndProcedure
+	
 ;     unsigned int VBO, VAO, EBO;
 ;     glGenVertexArrays(1, &VAO);
 ;     glGenBuffers(1, &VBO);
@@ -195,13 +218,28 @@ Until Event = #PB_Event_CloseWindow
 ;     // height will be significantly larger than specified on retina displays.
 ;     glViewport(0, 0, width, height);
 ; }
+AddWindowTimer(0, 1, 16) ; about 60 fps
+
+Global Event
+Repeat
+  Event = WaitWindowEvent()
+  
+  Select Event
+    Case #PB_Event_Timer
+      If EventTimer() = 1
+        DrawTriangle(0)
+      EndIf
+  EndSelect
+  
+Until Event = #PB_Event_CloseWindow
+
 	egl_end(*egl_obj)
 
 	CloseLibrary(#LibEGL)
 	CloseLibrary(#LibGLES)
 	CloseLibrary(#Libmoz)
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 11
-; FirstLine = 5
-; Folding = -
+; CursorPosition = 76
+; FirstLine = 56
+; Folding = --
 ; EnableXP

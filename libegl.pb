@@ -35,6 +35,7 @@ XIncludeFile "..\libsmacros.pb"
 		routine(#LibEGL,l,eglInitialize,(dpy.i, major.i, minor.i))
 		routine(#LibEGL,l,eglMakeCurrent,(dpy.i, draw.i, readsurf.i, ctx.i))
 		routine(#LibEGL,l,eglQueryContext,(dpy.i, ctx.i, attribute.l, value.i))
+		routine(#LibEGL,l,eglSwapBuffers,(dpy.i, surface.i))
 		routine(#LibEGL,l,eglSwapInterval,(dpy.i, interval.l))
 		routine(#LibEGL,l,eglTerminate,(dpy.i))
 
@@ -212,7 +213,7 @@ XIncludeFile "..\libsmacros.pb"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 186
-; FirstLine = 73
-; Folding = EBg
+; CursorPosition = 37
+; FirstLine = 12
+; Folding = FBo
 ; EnableXP
