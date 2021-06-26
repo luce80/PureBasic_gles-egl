@@ -39,9 +39,9 @@ EnableExplicit
 		End 1
 	EndIf
 
-	XIncludeFile "libgles.pb"
+	XIncludeFile "libgles.pbi"
 	UseModule gles
-	XIncludeFile "libegl.pb"
+	XIncludeFile "libegl.pbi"
 	UseModule egl
 	;}
 
@@ -195,7 +195,7 @@ EnableExplicit
 	CloseLibrary(#Libmoz)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 177
-; FirstLine = 39
-; Folding = w6-
+; CursorPosition = 43
+; FirstLine = 26
+; Folding = x6-
 ; EnableXP

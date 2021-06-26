@@ -1,6 +1,6 @@
 EnableExplicit
 
-XIncludeFile "..\libsmacros.pb"
+XIncludeFile "..\libsmacros.pbi"
 
 	DeclareModule egl
 		UseModule libsmacros
@@ -215,7 +215,6 @@ XIncludeFile "..\libsmacros.pb"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 199
-; FirstLine = 143
+; CursorPosition = 2
 ; Folding = vho
 ; EnableXP

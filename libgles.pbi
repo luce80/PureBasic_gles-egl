@@ -1,6 +1,6 @@
 EnableExplicit
 
-XIncludeFile "..\libsmacros.pb"
+XIncludeFile "..\libsmacros.pbi"
 	DeclareModule gles
 		UseModule libsmacros
 		#LibGLES = 5002 ; random number but MUST equal that of OpenLibrary(...)
@@ -240,7 +240,6 @@ XIncludeFile "..\libsmacros.pb"
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 209
-; FirstLine = 84
+; CursorPosition = 2
 ; Folding = TD5
 ; EnableXP
