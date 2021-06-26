@@ -146,21 +146,21 @@ XIncludeFile "..\libsmacros.pb"
 			throw_error("GL_LINK_STATUS")
 			glGetProgramiv (program, #GL_INFO_LOG_LENGTH,  @InfoLogLength)
 			throw_error("GL_INFO_LOG_LENGTH")
-				If InfoLogLength > 0
+			If InfoLogLength > 0
 				; alloc a string long enough
 				msg = LSet("",InfoLogLength * 2)
 				glGetShaderInfoLog (program, InfoLogLength,  @InfoLogLength, @msg)
 				msg = PeekS(@msg,-1,#PB_Ascii)
 				If FindString (msg, "warning") > 0
 						Debug msg
-					Else
+				Else
 					glDeleteProgram (program)
 					Debug msg
 		
 					End
 		
 				EndIf
-				EndIf
+			EndIf
 			If validate
 				;FIX ME: can a program be correctly linked but not validated ?
 				glValidateProgram (program)
@@ -207,7 +207,7 @@ XIncludeFile "..\libsmacros.pb"
 			ProcedureReturn bo
 		EndProcedure
 		
-		Procedure set_vertex_attribute(program.l, ;"Value returned by gles-make-program or glCreateProgram"
+		Procedure set_vertex_attribute(program.l, ;"Value returned by make_program or glCreateProgram"
 			varname.s, ; "Symbolic name of vertex attribute"
 			buffer.i, ; "buffer object"
 			size.l, ; "Number of components for this vertex attribute. Must be 1, 2, 3, or 4." ; FIX ME: accept also format as "P2C3" or "P3T2N3" etc.
@@ -240,7 +240,7 @@ XIncludeFile "..\libsmacros.pb"
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 25
-; FirstLine = 15
-; Folding = T0+
+; CursorPosition = 209
+; FirstLine = 84
+; Folding = TD5
 ; EnableXP
