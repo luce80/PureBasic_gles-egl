@@ -8,12 +8,17 @@ XIncludeFile "..\libsmacros.pb"
 		#GL_FALSE =                          0
 		#GL_TRUE =                           1
 		#GL_TRIANGLES =                      4
+		#GL_UNSIGNED_BYTE =                  5121
 		#GL_UNSIGNED_INT =                   5125
 		#GL_FLOAT =                          5126
+		#GL_RGB =                            6407
+		#GL_RGBA =                           6408
 		#GL_VENDOR =                         7936
 		#GL_RENDERER =                       7937
 		#GL_VERSION =                        7938
 		#GL_EXTENSIONS =                     7939
+		#GL_BGR =                        32992
+		#GL_BGRA =                       32993
 		#GL_FRAGMENT_SHADER =                35632
 		#GL_VERTEX_SHADER =                  35633
 		#GL_INFO_LOG_LENGTH =                35716
@@ -50,6 +55,7 @@ XIncludeFile "..\libsmacros.pb"
 		routine(#LibGLES,l,glValidateProgram,(program.l))
 		routine(#LibGLES,l,glVertexAttribPointer,(index.l, size.l, type.l, normalized.b, stride.l, pointer.i))
 		routine(#LibGLES,l,glViewport,(x.l, y.l, width.l, height.l))
+		routine(#LibGLES,l,glReadPixels,(x.l, y.l, width.l, height.l, format.l, type.l, pixels.i))
 
 		Declare.s GetErrorString(error.l)
 		Declare throw_error(msg.s)
@@ -234,7 +240,7 @@ XIncludeFile "..\libsmacros.pb"
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 51
-; FirstLine = 40
+; CursorPosition = 25
+; FirstLine = 15
 ; Folding = T0+
 ; EnableXP

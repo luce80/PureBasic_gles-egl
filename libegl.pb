@@ -23,6 +23,8 @@ XIncludeFile "..\libsmacros.pb"
 		#EGL_SUCCESS =                       12288
 		#EGL_BAD_DISPLAY =                   12296
 		#EGL_DEFAULT_DISPLAY =               0 ;EGL_CAST(EGLNativeDisplayType,0)
+		#EGL_SURFACE_TYPE =                  12339
+		#EGL_WINDOW_BIT =                    4
 		;
 		routine(#LibEGL,l,eglChooseConfig,(dpy.i, attrib_list.i, configs.i, config_size.l, num_config.i))
 		routine(#LibEGL,i,eglCreateContext,(dpy.i, config.i, share_context.i, attrib_list.i))
@@ -39,9 +41,9 @@ XIncludeFile "..\libsmacros.pb"
 		routine(#LibEGL,l,eglSwapInterval,(dpy.i, interval.l))
 		routine(#LibEGL,l,eglTerminate,(dpy.i))
 
-		;Declare.s GetErrorString(error.l)
+		;Declare.s egl_GetErrorString(error.l)
 		;Declare check_error(msg.s)
-		Declare.i egl_Start(Window.i, Array fb_list(1), Array ctx_list(1), verbose.l = #False)
+		Declare.i egl_Start(Window.i, fb_list.i, ctx_list.i, verbose.l = #False)
 		Declare egl_End(*object.egl_object)
 	EndDeclareModule
 	
@@ -85,8 +87,8 @@ XIncludeFile "..\libsmacros.pb"
 		; some comments taken from eglIntro.html
 		;	"Creates and assigns an OpenGL context to given window"
 		Procedure.i egl_Start(Window.i, ; "Window to assign the new context to"
-			Array fb_list(1),; "Array with keys and values of desired frame buffer"
-			Array ctx_list(1),; "Array with keys and values of desired context attributes"
+			fb_list.i,; "Array with keys and values of desired frame buffer"
+			ctx_list.i,; "Array with keys and values of desired context attributes"
 			verbose.l = #False); "Print some information"
 			Protected NULL.l = 0
 	
@@ -128,15 +130,15 @@ XIncludeFile "..\libsmacros.pb"
 			;/* get an appropriate EGL frame buffer configuration */
 	
 			; return total number of configs that match given attributes
-			eglChooseConfig (egl_obj\display, fb_list(), NULL, 0, @num_config)
+			eglChooseConfig (egl_obj\display, fb_list, NULL, 0, @num_config)
 			check_error ("eglChooseConfig GET")
 			If verbose
 				Debug "total number of configs that match given attributes: " +num_config
 			EndIf
 			; fall down to a possible config
 			If num_config = 0
-				fb_list(0) = #EGL_NONE
-				eglChooseConfig (egl_obj\display, fb_list(), NULL, 0, @num_config)
+				PokeL(fb_list, #EGL_NONE)
+				eglChooseConfig (egl_obj\display, fb_list, NULL, 0, @num_config)
 				check_error ("eglChooseConfig GET")
 			EndIf
 	
@@ -144,7 +146,7 @@ XIncludeFile "..\libsmacros.pb"
 			Dim configs.i(num_config)
 			
 			; fill configs array of matching configs
-			eglChooseConfig (egl_obj\display, fb_list(), configs(), num_config, @num_config)
+			eglChooseConfig (egl_obj\display, fb_list, configs(), num_config, @num_config)
 			check_error ("eglChooseConfig UPD")
 	
 			;/* create an EGL rendering context */
@@ -154,7 +156,7 @@ XIncludeFile "..\libsmacros.pb"
 			last_error = 0
 			For elem = 0 To num_config
 				config = configs (elem)
-				egl_obj\context = eglCreateContext (egl_obj\display, config, #EGL_NO_CONTEXT, ctx_list())
+				egl_obj\context = eglCreateContext (egl_obj\display, config, #EGL_NO_CONTEXT, ctx_list)
 				error = eglGetError()
 				If error = #EGL_SUCCESS
 					Break
@@ -195,7 +197,7 @@ XIncludeFile "..\libsmacros.pb"
 				Debug "GL_VENDOR: "+ gles::glGetString (#GL_VENDOR)
 				Debug "GL_RENDERER: "+ gles::glGetString (#GL_RENDERER)
 				;Debug "GL_SHADING_LANGUAGE_VERSION: "+ gles::glGetString (#GL_SHADING_LANGUAGE_VERSION)
-				Debug "GL_EXTENSIONS: "+ ReplaceString(gles::glGetString (#GL_EXTENSIONS)," ",~"\n")
+				Debug ~"GL_EXTENSIONS:\n"+ ReplaceString(gles::glGetString (#GL_EXTENSIONS)," ",~"\n")
 			EndIf
 	
 			eglSwapInterval (egl_obj\display, 1)
@@ -213,7 +215,7 @@ XIncludeFile "..\libsmacros.pb"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 37
-; FirstLine = 12
-; Folding = FBo
+; CursorPosition = 199
+; FirstLine = 143
+; Folding = vho
 ; EnableXP
