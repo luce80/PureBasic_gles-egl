@@ -48,6 +48,7 @@ EnableExplicit
 	Enumeration
 		#Window
 		#Canvas
+		#GLESCanvas
 		#Image
 	EndEnumeration
 
@@ -58,9 +59,10 @@ EnableExplicit
 	; 
 	
 	OpenWindow(#Window, 0, 0, 530, 320, "LibGLES & LibEGL Hello Triangle", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-	CanvasGadget(#Canvas,20,20,500,200)
+	;CanvasGadget(#Canvas,20,20,500,200)
+	Gadget(#GLESCanvas,20,20,500,200)
 
-	Global imagenum = CreateImage(#PB_Any, GadgetWidth(#Canvas), GadgetHeight(#Canvas), 32)
+	;Global imagenum = CreateImage(#PB_Any, GadgetWidth(#Canvas), GadgetHeight(#Canvas), 32)
 	
 	;Define canvas = CanvasOutput(0)
 	
@@ -167,17 +169,18 @@ EnableExplicit
 	  Event = WaitWindowEvent()
 	  
 		DrawTriangle()
-		If StartDrawing(ImageOutput(imagenum))
-			glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGRA, #GL_UNSIGNED_BYTE, DrawingBuffer())
-			;glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGR, #GL_UNSIGNED_BYTE, GetGadgetAttribute(#Canvas, #PB_Canvas_Image))
-			;glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGR, #GL_UNSIGNED_BYTE, ImageID(#Image))
-			;DrawImage(ImageID(#Image),0,0)
-			StopDrawing()
-		EndIf
-		If StartDrawing(CanvasOutput(#Canvas))
-			DrawImage(ImageID(imagenum),0,0)
-			StopDrawing()
-		EndIf
+		Gadget_SwapBuffers(#GLESCanvas)
+; 		If StartDrawing(ImageOutput(imagenum))
+; 			glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGRA, #GL_UNSIGNED_BYTE, DrawingBuffer())
+; 			;glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGR, #GL_UNSIGNED_BYTE, GetGadgetAttribute(#Canvas, #PB_Canvas_Image))
+; 			;glReadPixels (0, 0, GadgetWidth(#Canvas), GadgetHeight(#Canvas), #GL_BGR, #GL_UNSIGNED_BYTE, ImageID(#Image))
+; 			;DrawImage(ImageID(#Image),0,0)
+; 			StopDrawing()
+; 		EndIf
+; 		If StartDrawing(CanvasOutput(#Canvas))
+; 			DrawImage(ImageID(imagenum),0,0)
+; 			StopDrawing()
+; 		EndIf
 
 ; 	   Select Event
 ; 	    Case #PB_Event_Timer
@@ -195,7 +198,7 @@ EnableExplicit
 	CloseLibrary(#Libmoz)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 43
-; FirstLine = 26
-; Folding = x6-
+; CursorPosition = 167
+; FirstLine = 64
+; Folding = x6
 ; EnableXP

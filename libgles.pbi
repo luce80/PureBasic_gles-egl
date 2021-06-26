@@ -1,3 +1,26 @@
+;{ ===== MIT License =====
+;
+; Copyright (c) 2021 Marco Antoniazzi
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in all
+; copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+; SOFTWARE.
+;}
+
 EnableExplicit
 
 XIncludeFile "..\libsmacros.pbi"
@@ -64,6 +87,9 @@ XIncludeFile "..\libsmacros.pbi"
 		Declare make_program(vertex_shader.l, fragment_shader.l, validate.l = #False)
 		Declare make_buffer(type.l, usage.l, data_size.l, data_.i, bo.i)
 		Declare set_vertex_attribute(program.l, varname.s, buffer.i, size.l, stride.l = 0, start.l = 0,no_checks = #False) 
+		
+		Declare.i Gadget(GNum.i, X.i, Y.i, Width.i, Height.i, Flags.i=#False, WindowNum.i=#PB_Default)
+		Declare Gadget_SwapBuffers(GNum.i)
 	EndDeclareModule
 	
 	Module gles
@@ -236,10 +262,100 @@ XIncludeFile "..\libsmacros.pbi"
 			ProcedureReturn vertexLoc
 		EndProcedure
 
+
+	; some code below is "inspired" (AKA stolen from) Thorsten Hoeppner 
+
+	Structure GLES_Canvas_Window_Structure  ; GLES_Canvas()\Window\...
+		Num.i
+		Width.f
+		Height.f
+	EndStructure ;
+
+	Structure GLES_Canvas_Size_Structure    ; GLES_Canvas()\Size\...
+		X.f
+		Y.f
+		Width.f
+		Height.f
+		Flags.i
+	EndStructure ;
+
+	Structure GLES_Canvas_Structure         ; GLES_Canvas()\...
+		CanvasNum.i
+		ID.s
+    State.i
+		Hide.i
+
+		Flags.i
+
+		Window.GLES_Canvas_Window_Structure
+		Size.GLES_Canvas_Size_Structure
+		
+		imagenum.i
+		
+    Map StateColor.i()
+	EndStructure ;
+	
+	Global NewMap GLES_Canvas.GLES_Canvas_Structure()
+
+	Procedure.i Gadget(GNum.i, X.i, Y.i, Width.i, Height.i, Flags.i=#False, WindowNum.i=#PB_Default)
+		Define DummyNum, Result.i
+		
+		
+		If #False ; FIX ME: Flags & #UseExistingCanvas ;{ Use an existing CanvasGadget
+      If IsGadget(GNum)
+        Result = #True
+      Else
+        ProcedureReturn #False
+      EndIf
+      ;}
+    Else
+      Result = CanvasGadget(GNum, X, Y, Width, Height)
+    EndIf
+		
+		If Result
+
+			If GNum = #PB_Any : GNum = Result : EndIf
+
+			If AddMapElement(GLES_Canvas(), Str(GNum))
+
+				GLES_Canvas()\CanvasNum = GNum
+
+					If WindowNum = #PB_Default
+						GLES_Canvas()\Window\Num = GetActiveWindow()
+					Else
+						GLES_Canvas()\Window\Num = WindowNum
+					EndIf
+					
+				GLES_Canvas()\Size\X = X
+				GLES_Canvas()\Size\Y = Y
+				GLES_Canvas()\Size\Width  = Width
+				GLES_Canvas()\Size\Height = Height
+				GLES_Canvas()\imagenum = CreateImage(#PB_Any, Width, Height, 32)
+				ProcedureReturn GNum
+			EndIf
+			;ProcedureReturn GNum
+
+		EndIf
+
+	EndProcedure
+	
+	Procedure Gadget_SwapBuffers(GNum.i)
+	If FindMapElement(GLES_Canvas(), Str(GNum))
+		If StartDrawing(ImageOutput(GLES_Canvas()\imagenum))
+			glReadPixels (0, 0, GLES_Canvas()\Size\Width, GLES_Canvas()\Size\Height, #GL_BGRA, #GL_UNSIGNED_BYTE, DrawingBuffer())
+			StopDrawing()
+		EndIf
+		If StartDrawing(CanvasOutput(GLES_Canvas()\CanvasNum))
+			DrawImage(ImageID(GLES_Canvas()\imagenum),0,0)
+			StopDrawing()
+		EndIf
+	EndIf
+	EndProcedure
 	EndModule
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
-; Folding = TD5
+; CursorPosition = 91
+; FirstLine = 71
+; Folding = nGw---
 ; EnableXP
