@@ -45,11 +45,11 @@ XIncludeFile "..\libsmacros.pbi"
 		;Declare check_error(msg.s)
 		Declare.i egl_Start(Window.i, fb_list.i, ctx_list.i, verbose.l = #False)
 		Declare egl_End(*object.egl_object)
+		
 	EndDeclareModule
 	
 	Module egl
 	
-
 		Procedure.s egl_GetErrorString(error.l)
 			Protected result.s
 			Select error
@@ -196,7 +196,7 @@ XIncludeFile "..\libsmacros.pbi"
 				Debug "GL_VERSION: "+ gles::glGetString (#GL_VERSION)
 				Debug "GL_VENDOR: "+ gles::glGetString (#GL_VENDOR)
 				Debug "GL_RENDERER: "+ gles::glGetString (#GL_RENDERER)
-				;Debug "GL_SHADING_LANGUAGE_VERSION: "+ gles::glGetString (#GL_SHADING_LANGUAGE_VERSION)
+				Debug "GL_SHADING_LANGUAGE_VERSION: "+ gles::glGetString (35724);#GL_SHADING_LANGUAGE_VERSION)
 				Debug ~"GL_EXTENSIONS:\n"+ ReplaceString(gles::glGetString (#GL_EXTENSIONS)," ",~"\n")
 			EndIf
 	
@@ -215,6 +215,7 @@ XIncludeFile "..\libsmacros.pbi"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 2
-; Folding = vho
+; CursorPosition = 52
+; FirstLine = 27
+; Folding = FBg
 ; EnableXP

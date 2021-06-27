@@ -24,6 +24,7 @@
 EnableExplicit
 
 XIncludeFile "..\libsmacros.pbi"
+
 	DeclareModule gles
 		UseModule libsmacros
 		#LibGLES = 5002 ; random number but MUST equal that of OpenLibrary(...)
@@ -263,99 +264,100 @@ XIncludeFile "..\libsmacros.pbi"
 		EndProcedure
 
 
-	; some code below is "inspired" (AKA stolen from) Thorsten Hoeppner 
-
-	Structure GLES_Canvas_Window_Structure  ; GLES_Canvas()\Window\...
-		Num.i
-		Width.f
-		Height.f
-	EndStructure ;
-
-	Structure GLES_Canvas_Size_Structure    ; GLES_Canvas()\Size\...
-		X.f
-		Y.f
-		Width.f
-		Height.f
-		Flags.i
-	EndStructure ;
-
-	Structure GLES_Canvas_Structure         ; GLES_Canvas()\...
-		CanvasNum.i
-		ID.s
-    State.i
-		Hide.i
-
-		Flags.i
-
-		Window.GLES_Canvas_Window_Structure
-		Size.GLES_Canvas_Size_Structure
-		
-		imagenum.i
-		
-    Map StateColor.i()
-	EndStructure ;
+		; some code below is "inspired by" (AKA stolen from) Thorsten Hoeppner 
 	
-	Global NewMap GLES_Canvas.GLES_Canvas_Structure()
-
-	Procedure.i Gadget(GNum.i, X.i, Y.i, Width.i, Height.i, Flags.i=#False, WindowNum.i=#PB_Default)
-		Define DummyNum, Result.i
+		Structure GLES_Canvas_Window_Structure  ; GLES_Canvas()\Window\...
+			Num.i
+			Width.f
+			Height.f
+		EndStructure ;
+	
+		Structure GLES_Canvas_Size_Structure    ; GLES_Canvas()\Size\...
+			X.f
+			Y.f
+			Width.f
+			Height.f
+			Flags.i
+		EndStructure ;
+	
+		Structure GLES_Canvas_Structure         ; GLES_Canvas()\...
+			CanvasNum.i
+			ID.s
+	    State.i
+			Hide.i
+	
+			Flags.i
+	
+			Window.GLES_Canvas_Window_Structure
+			Size.GLES_Canvas_Size_Structure
+			
+			imagenum.i
+			
+		EndStructure ;
 		
-		
-		If #False ; FIX ME: Flags & #UseExistingCanvas ;{ Use an existing CanvasGadget
-      If IsGadget(GNum)
-        Result = #True
-      Else
-        ProcedureReturn #False
-      EndIf
-      ;}
-    Else
-      Result = CanvasGadget(GNum, X, Y, Width, Height)
-    EndIf
-		
-		If Result
-
-			If GNum = #PB_Any : GNum = Result : EndIf
-
-			If AddMapElement(GLES_Canvas(), Str(GNum))
-
-				GLES_Canvas()\CanvasNum = GNum
-
+		Global NewMap GLES_Canvas.GLES_Canvas_Structure()
+	
+		Procedure.i Gadget(GNum.i, X.i, Y.i, Width.i, Height.i, Flags.i=#False, WindowNum.i=#PB_Default)
+			Define DummyNum, Result.i
+			
+			
+			If #False ; FIX ME: Flags & #UseExistingCanvas ; Use an existing CanvasGadget
+	      If IsGadget(GNum)
+	        Result = #True
+	      Else
+	        ProcedureReturn #False
+	      EndIf
+	      ;
+	    Else
+	      Result = CanvasGadget(GNum, X, Y, Width, Height)
+	    EndIf
+			
+			If Result
+	
+				If GNum = #PB_Any : GNum = Result : EndIf
+	
+				If AddMapElement(GLES_Canvas(), Str(GNum))
+	
+					GLES_Canvas()\CanvasNum = GNum
+	
 					If WindowNum = #PB_Default
 						GLES_Canvas()\Window\Num = GetActiveWindow()
 					Else
 						GLES_Canvas()\Window\Num = WindowNum
 					EndIf
-					
-				GLES_Canvas()\Size\X = X
-				GLES_Canvas()\Size\Y = Y
-				GLES_Canvas()\Size\Width  = Width
-				GLES_Canvas()\Size\Height = Height
-				GLES_Canvas()\imagenum = CreateImage(#PB_Any, Width, Height, 32)
-				ProcedureReturn GNum
-			EndIf
-			;ProcedureReturn GNum
-
-		EndIf
-
-	EndProcedure
+						
+					GLES_Canvas()\Size\X = X
+					GLES_Canvas()\Size\Y = Y
+					GLES_Canvas()\Size\Width  = Width
+					GLES_Canvas()\Size\Height = Height
 	
-	Procedure Gadget_SwapBuffers(GNum.i)
-	If FindMapElement(GLES_Canvas(), Str(GNum))
-		If StartDrawing(ImageOutput(GLES_Canvas()\imagenum))
-			glReadPixels (0, 0, GLES_Canvas()\Size\Width, GLES_Canvas()\Size\Height, #GL_BGRA, #GL_UNSIGNED_BYTE, DrawingBuffer())
-			StopDrawing()
-		EndIf
-		If StartDrawing(CanvasOutput(GLES_Canvas()\CanvasNum))
-			DrawImage(ImageID(GLES_Canvas()\imagenum),0,0)
-			StopDrawing()
-		EndIf
-	EndIf
-	EndProcedure
+					GLES_Canvas()\imagenum = CreateImage(#PB_Any, Width, Height, 32)
+					ProcedureReturn GNum
+				EndIf
+	
+			EndIf
+	
+		EndProcedure
+		
+		; copy content of framebuffer to our CanvasGadget
+		Procedure Gadget_SwapBuffers(GNum.i)
+			If FindMapElement(GLES_Canvas(), Str(GNum))
+				If StartDrawing(ImageOutput(GLES_Canvas()\imagenum))
+					glReadPixels (0, 0, GLES_Canvas()\Size\Width, GLES_Canvas()\Size\Height, #GL_BGRA, #GL_UNSIGNED_BYTE, DrawingBuffer())
+					StopDrawing()
+				EndIf
+				If StartDrawing(CanvasOutput(GLES_Canvas()\CanvasNum))
+					DrawImage(ImageID(GLES_Canvas()\imagenum),0,0)
+					StopDrawing()
+				EndIf
+			EndIf
+		EndProcedure
+		
 	EndModule
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 91
-; FirstLine = 71
-; Folding = nGw---
+; CursorPosition = 26
+; FirstLine = 56
+; Folding = 3AAg9-
 ; EnableXP
