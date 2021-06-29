@@ -74,8 +74,11 @@ XIncludeFile "..\libsmacros.pbi"
 		routine(#LibGLES,l,glLinkProgram,(program.l))
 		routine(#LibGLES,l,glEnableVertexAttribArray,(index.l))
 		routine(#LibGLES,l,glGetProgramiv,(program.l, pname.l, params.i))
+		routine(#LibGLES,l,glGetUniformLocation,(program.l, name.p-ascii))
 		routine(#LibGLES,l,glShaderSource,(shader.l, count.l, string.i, length.i))
 		routine(#LibGLES,l,glUseProgram,(program.l))
+		routine(#LibGLES,l,glUniform1f,(location.l, v0.f ))
+		routine(#LibGLES,l,glUniform2f,(location.l, v0.f, v1.f ))
 		routine(#LibGLES,l,glValidateProgram,(program.l))
 		routine(#LibGLES,l,glVertexAttribPointer,(index.l, size.l, type.l, normalized.b, stride.l, pointer.i))
 		routine(#LibGLES,l,glViewport,(x.l, y.l, width.l, height.l))
@@ -357,7 +360,7 @@ XIncludeFile "..\libsmacros.pbi"
 	
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 26
-; FirstLine = 56
+; CursorPosition = 80
+; FirstLine = 35
 ; Folding = 3AAg9-
 ; EnableXP
