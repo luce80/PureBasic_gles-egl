@@ -1,5 +1,5 @@
 ;
-; Simple test for PureBasic binding for libGLES and libEGL shared libraries
+; Simple test for PureBasic bindings for libGLES and libEGL shared libraries
 ;
 ; Adjust libpath and libname variables to your needs.
 ;
@@ -7,22 +7,22 @@
 ;
 ; title: "Test for libgles.pbi and libegl.pbi"
 ; author: "Marco Antoniazzi"
-; date:
+; date: 03-07-2021
 ; version: 1.0.0
 ; history:
 ;		1.0.0 "Initial version"
-; license: 
+; license: http://creativecommons.org/licenses/by/4.0/
 ;
 EnableExplicit
 
 	;{ load libs and modules
-	IncludeFile "..\libsmacros.pbi"
-	Define libpath.s, libname.s, libfullname.s
+	IncludeFile "libsmacros.pbi"
+	Define libpath.s, libname.s
 
-	libpath = "E:\Programmi\Web\FireFox\"
+	#libpath = "E:\Programmi\Web\FireFox\"
 	#Libmoz = 1
 	libname = "mozglue.dll" ; FIX ME: CompilerIf firefox... or place it in program folder
-	libsmacros::OpenLib(#Libmoz,libname,libpath)
+	libsmacros::OpenLib(#Libmoz,libname,#libpath)
 	#LibGLES = 5002 ; random number but MUST be equal to the one in libgles.pbi
 	libname = "libGLESv2.DLL" ; FIX ME: CompilerIf Windows...
 	libsmacros::OpenLib(#LibGLES,libname,libpath)
@@ -281,7 +281,7 @@ EnableExplicit
 	CloseLibrary(#PB_All)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 65
-; Folding = EA+
+; CursorPosition = 24
+; FirstLine = 14
+; Folding = FC+
 ; EnableXP

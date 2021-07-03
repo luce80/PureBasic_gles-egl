@@ -1,4 +1,6 @@
-
+;
+; = Binding for the libEGL shared library =
+;
 ; BEWARE: ONLY A FEW FUNCTIONS TESTED !!!! 
 
 ; == instructions ==
@@ -9,10 +11,13 @@
 ; 			ctx_list.i,; "Array with keys and values of desired context attributes"
 ; 			verbose.l = #False); "Print some information"
 
+; author: "Marco Antoniazzi"
+; date: 03-07-2021
+; license: http://creativecommons.org/licenses/by-sa/4.0/
 
 EnableExplicit
 
-XIncludeFile "..\libsmacros.pbi"
+XIncludeFile "libsmacros.pbi"
 
 	DeclareModule egl
 		UseModule libsmacros
@@ -431,7 +436,6 @@ XIncludeFile "..\libsmacros.pbi"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 316
-; FirstLine = 41
-; Folding = BAyAw
+; CursorPosition = 3
+; Folding = AA5Aw
 ; EnableXP
