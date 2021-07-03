@@ -1,15 +1,17 @@
-
 ;
 ; Simple test for PureBasic binding for libGLES and libEGL shared libraries
 ;
+; Adjust libpath and libname variables to your needs.
+;
 ; Please forgive any "inconsistencies" since I am not a PureBasic expert
 ;
-; title:
-; author:
+; title: "Test for libgles.pbi and libegl.pbi"
+; author: "Marco Antoniazzi"
 ; date:
-; version:
+; version: 1.0.0
 ; history:
-; license:
+;		1.0.0 "Initial version"
+; license: 
 ;
 EnableExplicit
 
@@ -35,6 +37,8 @@ EnableExplicit
 	;}
 
 	Enumeration
+		#Window1
+		#timer1
 		#Window2
 		#GLESCanvas
 		#text1
@@ -43,7 +47,39 @@ EnableExplicit
 		#timer2
 	EndEnumeration
 
-	;{ fragment shader
+	;{ fragment shaders
+	Global glslsandbox_com_e59828_0.s = ~"//http://glslsandbox.com/e#59828.0\n"+
+	~"	//translate variable names\n"+
+	~"	#define time u_Time\n"+
+	~"	#define resolution u_Resolution\n"+
+
+	~"	#ifdef GL_ES\n"+
+	~"	precision mediump float;\n"+
+	~"	#endif\n"+
+
+	~"	uniform float time;\n"+
+	~"	uniform vec2 resolution;\n"+
+
+	~"	#define t time\n"+
+
+	~"	vec2 pos_for_aspect_min(vec2 fragCoord , vec2 resolution) {\n"+
+	~"		return fragCoord / min(resolution.x,resolution.y) * 2. - 1.;\n"+
+	~"	}\n"+
+
+	~"	void main() {\n"+
+	~"		vec2 p = pos_for_aspect_min( gl_FragCoord.xy , resolution);\n"+
+
+	~"		float c = 0.0;\n"+
+	~"		for(float l = 0.0;l < 10.0;l++){\n"+
+	~"			for (float i = 0.0;i < 10.0;i++){\n"+
+	~"				float j = i - 1.0; \n"+
+	~"				float si = sin(t + i * 0.628318) / 2.0 - sin(t/4.-l);\n"+
+	~"				float co = cos(t - i * 0.628318) / 8.0 + tan(t/8.-l);\n"+
+	~"				c += 0.003 / abs(length(p - vec2(si,co)/(1.25/abs(cos(t/4.0)))) - 0.1 );\n"+
+	~"			}\n"+
+	~"		}\n"+
+	~"		gl_FragColor = vec4(vec3(abs(c*atan(t))- 0.5,c*cos(t),abs(c*sin(t))), 1.0 );\n"+
+	~"	}\n"
 	Global woah_circle.s = ~"//http://glslsandbox.com/e#58416.0 woah circle\n"+
 	~"	#ifdef GL_ES\n"+
 	~"	precision highp float;\n"+
@@ -70,21 +106,34 @@ EnableExplicit
 	~"	}\n"
 	;}
 
-	Global sld_speed.f = 0.004, sld_radius.f = 0.3
+	Global sld_speed.f = 4, sld_radius.f = 0.3
 
 	; // settings
-	#WIN_WIDTH = 530;
-	#WIN_HEIGHT = 320;
+	#frame_width = 640;
+	#frame_height = 480;
 	; 
+	Procedure OpenWindow_1st()
+		OpenWindow(#Window1, 0, 0, #frame_width, #frame_height, "LibGLES & LibEGL Hello Triangle", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+	EndProcedure
+
+	Procedure Window_1st_Events(event)
+		Select event
+			Case #PB_Event_CloseWindow
+				ProcedureReturn #False
+				
+		EndSelect
+		ProcedureReturn #True
+	EndProcedure
+
 	Procedure OpenWindow_2nd()
-		OpenWindow(#Window2, 0, 0, 530, 400, "LibGLES & LibEGL Hello Triangle", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
+		OpenWindow(#Window2, 0, 0, #frame_width + 40, #frame_height + 65, "LibGLES & LibEGL Hello Triangle", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
 		TextGadget(#text1, 0,0,210,20,"Use sliders to control speed and radius")
 		TrackBarGadget(#trackbar1, 10, 20, 100, 25, 0, 100)
 		SetGadgetState(#trackbar1,20)
-		TrackBarGadget(#trackbar2, 10, 45, 100, 25, 0, 100)
+		TrackBarGadget(#trackbar2, 110, 20, 100, 25, 0, 100)
 		SetGadgetState(#trackbar2,30)
 	
-		Gadget(#GLESCanvas,20,120,500,200)
+		Gadget(#GLESCanvas,20,45,#frame_width,#frame_height)
 	EndProcedure
 
 	Procedure Window_2nd_Events(event)
@@ -94,7 +143,7 @@ EnableExplicit
 				
 			Case #PB_Event_Gadget
 				Select EventGadget()
-					Case #trackbar1 : sld_speed = 0.02 * ((GetGadgetState(#trackbar1) / 100.0))
+					Case #trackbar1 : sld_speed = 20 * ((GetGadgetState(#trackbar1) / 100.0))
 					Case #trackbar2 : sld_radius = (GetGadgetState(#trackbar2) / 100.0)
 				EndSelect
 		EndSelect
@@ -160,11 +209,11 @@ EnableExplicit
 		Global t0.l = ElapsedMilliseconds()  
 	EndProcedure
 	
-	Procedure DrawTriangle()
+	Procedure DrawTriangle(w.f,h.f)
 	
 		; assign changing variables values
-		glUniform1f (u_TimeLoc, ElapsedMilliseconds() - t0)
-		glUniform2f (u_ResolutionLoc, 500.0, 200.0)
+		glUniform1f (u_TimeLoc, (ElapsedMilliseconds() - t0) / 1000)
+		glUniform2f (u_ResolutionLoc, w, h)
 		
 		glUniform1f (u_speedLoc, sld_speed)
 		glUniform1f (u_radiusLoc, sld_radius)
@@ -176,7 +225,9 @@ EnableExplicit
 		glDrawElements (#GL_TRIANGLES, 3, #GL_UNSIGNED_INT, indices)
 	EndProcedure
 
-	OpenWindow_2nd()
+	Global *egl_obj.egl_object
+
+	OpenWindow_1st()
 
 	; init and make egl context
 	DataSection
@@ -190,10 +241,30 @@ EnableExplicit
 	EndDataSection
 
 	;Create and assign an OpenGL context to current window using EGL
-	Global *egl_obj.egl_object
-	*egl_obj = egl_Start(WindowID(#Window2), ?framebuffer_attribs, ?context_attribs, #False)
+	*egl_obj = egl_Start(WindowID(#Window1), ?framebuffer_attribs, ?context_attribs, #False)
 	
-	glViewport (0, 0, 500, 200) ; optional if viewport is entire window
+	;glViewport (0, 0, #frame_width, #frame_height) ; optional if viewport is entire window
+
+	SetupGL(glslsandbox_com_e59828_0)
+	glUseProgram (program)
+		
+	AddWindowTimer(#Window1, #timer1, 1000 / 60) ; about 60 fps
+	
+	While Window_1st_Events(WaitWindowEvent()) <> #False
+		DrawTriangle(#frame_width, #frame_height)
+		eglSwapBuffers(*egl_obj\display, *egl_obj\surface)
+	Wend
+	
+	egl_end(*egl_obj)
+	
+	
+	
+	OpenWindow_2nd()
+
+	;Create and assign an OpenGL context to current window using EGL
+	*egl_obj = egl_Start(WindowID(#Window2), ?framebuffer_attribs, ?context_attribs)
+	
+	glViewport (0, 0, #frame_width, #frame_height)
 
 	SetupGL(woah_circle)
 	glUseProgram (program)
@@ -201,7 +272,7 @@ EnableExplicit
 	AddWindowTimer(#Window2, #timer2, 1000 / 60) ; about 60 fps
 	
 	While Window_2nd_Events(WaitWindowEvent()) <> #False
-		DrawTriangle()
+		DrawTriangle(#frame_width, #frame_height)
 		Gadget_SwapBuffers(#GLESCanvas)
 	Wend
 	
@@ -210,7 +281,7 @@ EnableExplicit
 	CloseLibrary(#PB_All)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 206
-; FirstLine = 179
-; Folding = --
+; CursorPosition = 264
+; FirstLine = 65
+; Folding = EA+
 ; EnableXP
