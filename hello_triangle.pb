@@ -19,10 +19,10 @@ EnableExplicit
 	IncludeFile "libsmacros.pbi"
 	Define libpath.s, libname.s
 
-	#libpath = "E:\Programmi\Web\FireFox\"
+	libpath = "E:\Programmi\Web\FireFox\"
 	#Libmoz = 1
 	libname = "mozglue.dll" ; FIX ME: CompilerIf firefox... or place it in program folder
-	libsmacros::OpenLib(#Libmoz,libname,#libpath)
+	libsmacros::OpenLib(#Libmoz,libname,libpath)
 	#LibGLES = 5002 ; random number but MUST be equal to the one in libgles.pbi
 	libname = "libGLESv2.DLL" ; FIX ME: CompilerIf Windows...
 	libsmacros::OpenLib(#LibGLES,libname,libpath)
@@ -281,7 +281,7 @@ EnableExplicit
 	CloseLibrary(#PB_All)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 24
-; FirstLine = 14
-; Folding = FC+
+; CursorPosition = 98
+; FirstLine = 85
+; Folding = lh-
 ; EnableXP
