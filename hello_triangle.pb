@@ -11,6 +11,8 @@
 ; version: 1.0.0
 ; history:
 ;		1.0.0 "Initial version"
+;		1.0.1 10-05-2022 "Fixed closing of windows"
+;		1.0.2 14-05-2022 "Added buffer and alpha size in verbose mode. Made example framebuffer bit size explicitly 32 bit"
 ; license: http://creativecommons.org/licenses/by/4.0/
 ;
 EnableExplicit
@@ -19,7 +21,10 @@ EnableExplicit
 	IncludeFile "libsmacros.pbi"
 	Define libpath.s, libname.s
 
-	libpath = "E:\Programmi\Web\FireFox\"
+	libpath = "C:\Program Files\Mozilla Firefox\"
+	;libpath = "G:\Programmi\Web\FireFox\"
+	;libpath = "C:\Program Files (x86)\Microsoft\EdgeCore\101.0.1210.39\"
+	;libpath = "G:\Programmi\Prog\Rebol\local\libs\GL\Chrome32bit_v79\"
 	#Libmoz = 1
 	libname = "mozglue.dll" ; FIX ME: CompilerIf firefox... or place it in program folder
 	libsmacros::OpenLib(#Libmoz,libname,libpath)
@@ -119,6 +124,7 @@ EnableExplicit
 	Procedure Window_1st_Events(event)
 		Select event
 			Case #PB_Event_CloseWindow
+				CloseWindow(#Window1)
 				ProcedureReturn #False
 				
 		EndSelect
@@ -127,7 +133,7 @@ EnableExplicit
 
 	Procedure OpenWindow_2nd()
 		OpenWindow(#Window2, 0, 0, #frame_width + 40, #frame_height + 65, "LibGLES & LibEGL Hello Triangle", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
-		TextGadget(#text1, 0,0,210,20,"Use sliders to control speed and radius")
+		TextGadget(#text1, 0,0,250,20,"Use sliders to control speed and radius")
 		TrackBarGadget(#trackbar1, 10, 20, 100, 25, 0, 100)
 		SetGadgetState(#trackbar1,20)
 		TrackBarGadget(#trackbar2, 110, 20, 100, 25, 0, 100)
@@ -139,6 +145,7 @@ EnableExplicit
 	Procedure Window_2nd_Events(event)
 		Select event
 			Case #PB_Event_CloseWindow
+				CloseWindow(#Window2)
 				ProcedureReturn #False
 				
 			Case #PB_Event_Gadget
@@ -233,6 +240,8 @@ EnableExplicit
 	DataSection
 		framebuffer_attribs:
 		Data.l 	#EGL_SURFACE_TYPE, #EGL_WINDOW_BIT,
+						#EGL_BUFFER_SIZE, 32,
+						;#EGL_SAMPLES, 4, ; multi-sampled 4x antialiasing
 						#EGL_NONE, #EGL_NONE
 
 		context_attribs:
@@ -241,7 +250,7 @@ EnableExplicit
 	EndDataSection
 
 	;Create and assign an OpenGL context to current window using EGL
-	*egl_obj = egl_Start(WindowID(#Window1), ?framebuffer_attribs, ?context_attribs, #False)
+	*egl_obj = egl_Start(WindowID(#Window1), ?framebuffer_attribs, ?context_attribs, #True)
 	
 	;glViewport (0, 0, #frame_width, #frame_height) ; optional if viewport is entire window
 
@@ -281,7 +290,7 @@ EnableExplicit
 	CloseLibrary(#PB_All)
 	
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 98
-; FirstLine = 85
-; Folding = lh-
+; CursorPosition = 29
+; FirstLine = 12
+; Folding = Bg9
 ; EnableXP

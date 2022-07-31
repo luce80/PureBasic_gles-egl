@@ -375,7 +375,7 @@ XIncludeFile "libsmacros.pbi"
 			Protected config, last_error, elem, error, error_string.s
 			config = 0
 			last_error = 0
-			For elem = 0 To num_config
+			For elem = 0 To num_config - 1
 				config = configs (elem)
 				egl_obj\context = eglCreateContext (egl_obj\display, config, #EGL_NO_CONTEXT, ctx_list)
 				error = eglGetError()
@@ -389,9 +389,13 @@ XIncludeFile "libsmacros.pbi"
 				error_string = egl_GetErrorString(last_error)
 				Debug "libEGL ERROR: "+last_error+" "+error_string+". "+msg
 	
-				End
+				End ; FIX ME: better ProcedurReturn ?
 				
 			EndIf
+	
+			;/* create an EGL window surface */
+			egl_obj\surface = eglCreateWindowSurface (egl_obj\display, config, Window, NULL)
+			check_error ("eglCreateWindowSurface")
 	
 			; some information for the curious
 			Protected result.i
@@ -402,11 +406,11 @@ XIncludeFile "libsmacros.pbi"
 				Debug "EGL_CONTEXT_CLIENT_TYPE " +result ; attempt [form first back find eglblock120 result/value]]
 				eglQueryContext (egl_obj\display, egl_obj\context, #EGL_CONTEXT_CLIENT_VERSION, @result)
 				Debug "EGL_CONTEXT_CLIENT_VERSION " +result
+				eglGetConfigAttrib(egl_obj\display, config, #EGL_BUFFER_SIZE, @result)
+				Debug "EGL_BUFFER_SIZE " +result
+				eglGetConfigAttrib(egl_obj\display, config, #EGL_ALPHA_SIZE, @result)
+				Debug "EGL_ALPHA_SIZE " +result
 			EndIf
-	
-			;/* create an EGL window surface */
-			egl_obj\surface = eglCreateWindowSurface (egl_obj\display, config, Window, NULL)
-			check_error ("eglCreateWindowSurface")
 	
 			;/* connect the context to the surface */
 			eglMakeCurrent (egl_obj\display, egl_obj\surface, egl_obj\surface, egl_obj\context)
@@ -436,6 +440,7 @@ XIncludeFile "libsmacros.pbi"
 	EndModule
 
 ; IDE Options = PureBasic 5.73 LTS (Windows - x64)
-; CursorPosition = 3
-; Folding = AA5Aw
+; CursorPosition = 374
+; FirstLine = 169
+; Folding = FAyw3
 ; EnableXP
